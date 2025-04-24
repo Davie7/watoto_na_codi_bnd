@@ -1,0 +1,110 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String    @id @default(uuid())
+  email           String    @unique
+  password        String?
+  googleId        String?   @unique
+  userType        UserType
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  student         Student[]
+  parent          Parent?
+  school          School?
+}
+
+enum UserType {
+  STUDENT
+  PARENT
+  SCHOOL
+}
+
+model Student {
+  id              String    @id @default(uuid())
+  firstName       String
+  lastName        String
+  dateOfBirth     DateTime?
+  gender          String?
+  currentSchool   String?
+  currentGrade    String?
+  userId          String
+  parentId        String?
+  schoolId        String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent          Parent?   @relation(fields: [parentId], references: [id])
+  school          School?   @relation(fields: [schoolId], references: [id])
+  enrollments     Enrollment[]
+}
+
+model Parent {
+  id              String    @id @default(uuid())
+  firstName       String
+  lastName        String
+  phoneNumber     String?
+  address         String?
+  relationToStudent String?
+  userId          String    @unique
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  students        Student[]
+}
+
+model School {
+  id              String    @id @default(uuid())
+  name            String
+  certificate     String?
+  adminName       String
+  userId          String    @unique
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  students        Student[]
+  programs        Program[]
+}
+
+model Program {
+  id              String    @id @default(uuid())
+  name            String
+  description     String?
+  experienceLevel String?
+  format          String?   // In-Person, Online, Hybrid
+  schoolId        String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  school          School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  enrollments     Enrollment[]
+}
+
+model Enrollment {
+  id              String    @id @default(uuid())
+  studentId       String
+  programId       String
+  schedule        String?
+  learningGoals   String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  student         Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  program         Program   @relation(fields: [programId], references: [id], onDelete: Cascade)
+}
