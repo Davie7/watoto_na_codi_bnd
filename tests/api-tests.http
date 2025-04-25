@@ -1,0 +1,81 @@
+@baseUrl = http://localhost:5173
+@contentType = application/json
+
+### Health Check (verify server is running)
+# @name healthCheck
+GET {{baseUrl}}/health
+
+### Register a new Student user
+# @name registerStudent
+POST {{baseUrl}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "student@example.com",
+  "password": "password123",
+  "userType": "STUDENT"
+}
+
+### Register a new Parent user
+# @name registerParent
+POST {{baseUrl}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "parent@example.com",
+  "password": "password123",
+  "userType": "PARENT"
+}
+
+### Register a new School user
+# @name registerSchool
+POST {{baseUrl}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "school@example.com",
+  "password": "password123",
+  "userType": "SCHOOL"
+}
+
+### Login with Student user
+# @name loginStudent
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "student@example.com",
+  "password": "password123"
+}
+
+### Capture the token from login response
+@authToken = {{loginStudent.response.body.data.token}}
+
+### Get current user profile (protected route)
+# @name getMe
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{authToken}}
+
+### Login with Parent user
+# @name loginParent
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "parent@example.com",
+  "password": "password123"
+}
+
+### Login with School user
+# @name loginSchool
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "school@example.com",
+  "password": "password123"
+}
+
+### Google OAuth URL (just for reference)
+# Note: This cannot be directly tested here as it requires browser interaction
+# GET {{baseUrl}}/api/auth/google?userType=STUDENT
