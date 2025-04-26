@@ -36,7 +36,7 @@ model Student {
   gender          String?
   currentSchool   String?
   currentGrade    String?
-  userId          String
+  userId          String    @unique
   parentId        String?
   schoolId        String?
   createdAt       DateTime  @default(now())

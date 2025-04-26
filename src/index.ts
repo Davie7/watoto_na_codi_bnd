@@ -10,6 +10,9 @@ import './config/passport';
 // Import routes
 import authRoutes from './routes/authRoutes';
 import schoolRoutes from './routes/schoolRoutes';
+import parentRoutes from './routes/parentRoutes';
+import studentRoutes from './routes/studentRoutes';
+
 
 // Initialize express app
 const app = express();
@@ -37,6 +40,8 @@ app.use(passport.session());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/schools', schoolRoutes);
+app.use('/api/parents', parentRoutes);
+app.use('/api/students', studentRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

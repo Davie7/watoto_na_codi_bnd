@@ -79,3 +79,96 @@ Content-Type: {{contentType}}
 ### Google OAuth URL (just for reference)
 # Note: This cannot be directly tested here as it requires browser interaction
 # GET {{baseUrl}}/api/auth/google?userType=STUDENT
+
+### Register a new parent with profile
+# @name registerParentProfile
+POST {{baseUrl}}/api/parents/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@example.com",
+  "password": "password123",
+  "phoneNumber": "1234567890",
+  "address": "123 Main St"
+}
+
+### Register a new student with profile
+# @name registerStudentProfile
+POST {{baseUrl}}/api/students/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Jane",
+  "lastName": "Doe",
+  "email": "jane.doe@example.com",
+  "password": "password123",
+  "dateOfBirth": "2010-05-15",
+  "gender": "Female",
+  "currentSchool": "Sample Elementary School",
+  "currentGrade": "5"
+}
+
+### Login with parent user (for testing protected routes)
+# @name loginParentProfile
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "john.doe@example.com",
+  "password": "password123"
+}
+
+### Capture the parent token
+@parentToken = {{loginParentProfile.response.body.data.token}}
+
+### Get parent profile
+GET {{baseUrl}}/api/parents/profile
+Authorization: Bearer {{parentToken}}
+
+### Login with student user (for testing protected routes)
+# @name loginStudentProfile
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "jane.doe@example.com",
+  "password": "password123"
+}
+
+### Capture the student token
+@studentToken = {{loginStudentProfile.response.body.data.token}}
+
+### Get student profile
+GET {{baseUrl}}/api/students/profile
+Authorization: Bearer {{studentToken}}
+
+### Add child to parent (parent must be logged in)
+POST {{baseUrl}}/api/parents/add-child
+Authorization: Bearer {{parentToken}}
+Content-Type: {{contentType}}
+
+{
+  "childId": "STUDENT_ID_GOES_HERE",
+  "relationToStudent": "Father"
+}
+
+### Get parent's children
+GET {{baseUrl}}/api/parents/children
+Authorization: Bearer {{parentToken}}
+
+### Student enrolls in a program
+POST {{baseUrl}}/api/students/enroll
+Authorization: Bearer {{studentToken}}
+Content-Type: {{contentType}}
+
+{
+  "programId": "PROGRAM_ID_GOES_HERE",
+  "schedule": "Monday and Wednesday, 4-6 PM",
+  "learningGoals": "Learn Python programming basics"
+}
+
+### Get student's enrollments
+GET {{baseUrl}}/api/students/enrollments
+Authorization: Bearer {{studentToken}}
